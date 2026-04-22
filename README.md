@@ -32,6 +32,26 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+## 起動方法
+
+セットアップ後は、まず仮想環境を有効化してから起動します。
+
+### GUI を起動する
+
+```bash
+source .venv/bin/activate
+python -m src.cli.main launch-gui
+```
+
+`tkinter` が使える環境ではデスクトップウィンドウで起動し、使えない環境ではローカルのブラウザ画面で起動します。
+
+### CLI で使い始める
+
+```bash
+source .venv/bin/activate
+python -m src.cli.main --help
+```
+
 ## 使い方
 
 全コマンドは `python -m src.cli.main` で実行します。DB パスは省略時に `data/processed/nutrition.db` を使います。
