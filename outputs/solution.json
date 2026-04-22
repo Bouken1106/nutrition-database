@@ -1,0 +1,28 @@
+{
+  "status": "optimal",
+  "total_cost_yen": 30.8571,
+  "foods": [
+    {
+      "food_id": "mext_1002",
+      "name": "オートミール",
+      "amount_g": 85.7143,
+      "cost_yen": 30.8571
+    }
+  ],
+  "nutrients": [
+    {
+      "nutrient_id": "energy_kcal",
+      "actual": 300.0,
+      "target_min": 300.0,
+      "target_max": null
+    },
+    {
+      "nutrient_id": "protein_g",
+      "actual": 11.7429,
+      "target_min": 10.0,
+      "target_max": null
+    }
+  ],
+  "excluded_foods_count": 0,
+  "notes": []
+}

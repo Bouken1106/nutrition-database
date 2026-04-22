@@ -1,0 +1,3 @@
+from_source_type,from_source_key,to_food_id,mapping_confidence
+estat,白米,mext_1001,1.0
+estat,オートミール,mext_1002,1.0

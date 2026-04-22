@@ -1,0 +1,7 @@
+{
+  "targets": [
+    {"nutrient_id": "energy_kcal", "min": 300},
+    {"nutrient_id": "protein_g", "min": 10}
+  ]
+}
+

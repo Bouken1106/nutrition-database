@@ -34,6 +34,7 @@ pip install -r requirements.txt
 ## CLI
 
 全コマンドは `python -m src.cli.main` で実行します。DB パスは省略時に `data/processed/nutrition.db` を使います。
+このリポジトリには、動作確認用の最小サンプル入力を `data/raw/` に同梱しています。
 
 ### DB 初期化
 
@@ -43,11 +44,15 @@ python -m src.cli.main init-db
 
 ### MEXT 取り込み
 
+同梱済みサンプル:
+
 ```bash
 python -m src.cli.main ingest-mext --input data/raw/mext.xlsx
 ```
 
 ### e-Stat 取り込み
+
+同梱済みサンプル:
 
 ```bash
 python -m src.cli.main ingest-estat --input data/raw/estat.csv
@@ -106,6 +111,17 @@ python -m src.cli.main map-foods --manual data/raw/manual_mapping.csv
 python -m src.cli.main solve-diet --targets data/raw/targets.json --output outputs/solution.json
 ```
 
+最小サンプルを最初から通す場合:
+
+```bash
+python -m src.cli.main init-db
+python -m src.cli.main ingest-mext --input data/raw/mext.xlsx
+python -m src.cli.main ingest-estat --input data/raw/estat.csv
+python -m src.cli.main map-foods --auto
+python -m src.cli.main solve-diet --targets data/raw/targets.json --output outputs/solution.json
+cat outputs/solution.json
+```
+
 ### CSV エクスポート
 
 ```bash
@@ -154,4 +170,3 @@ python -m src.cli.main export-unmatched --output outputs/unmatched.csv
 ```bash
 pytest
 ```
-
