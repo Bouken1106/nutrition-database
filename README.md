@@ -16,6 +16,7 @@ project_root/
     export/
     db/
     cli/
+    gui/
   tests/
   data/
     raw/
@@ -31,10 +32,24 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## CLI
+## 使い方
 
 全コマンドは `python -m src.cli.main` で実行します。DB パスは省略時に `data/processed/nutrition.db` を使います。
 このリポジトリには、動作確認用の最小サンプル入力を `data/raw/` に同梱しています。
+
+### GUI 起動
+
+ローカル GUI を起動します。`tkinter` が使える環境ではデスクトップウィンドウを開き、使えない環境ではローカルのブラウザ GUI に自動フォールバックします。内部では既存の CLI と同じ処理関数を呼び出します。
+
+```bash
+python -m src.cli.main launch-gui
+```
+
+別の DB を使う場合:
+
+```bash
+python -m src.cli.main --db data/processed/demo.db launch-gui
+```
 
 ### DB 初期化
 
@@ -60,13 +75,15 @@ python -m src.cli.main ingest-estat --input data/raw/estat.csv
 
 ### Open Food Facts 同期
 
+Open Food Facts ではまず `Search-a-licious` 検索を使い、結果が空なら旧検索 API に切り替えます。外部 API の状態によって取得件数は変わります。
+
 ```bash
 python -m src.cli.main sync-off-products --query オートミール
 ```
 
 ### Open Prices 同期
 
-`JPY` の価格だけを取り込みます。`yen per g` に正規化できない価格は最適化対象から除外されます。
+日本円 (`JPY`) の価格だけを取り込みます。`1g あたりの価格` に正規化できない価格は最適化対象から除外されます。
 同梱サンプルではなく外部 API の実データを使うため、存在する商品コードを指定してください。
 2026-04-22 時点で動作確認した例:
 
@@ -93,9 +110,9 @@ estat,こめ,mext_1001,1.0
 python -m src.cli.main map-foods --manual data/raw/manual_mapping.csv
 ```
 
-### 解く
+### 最適化を実行する
 
-ターゲット JSON 例:
+ユーザー定義の栄養ターゲット JSON 例:
 
 ```json
 {
@@ -113,7 +130,7 @@ python -m src.cli.main map-foods --manual data/raw/manual_mapping.csv
 python -m src.cli.main solve-diet --targets data/raw/targets.json --output outputs/solution.json
 ```
 
-最小サンプルを最初から通す場合:
+最小サンプルを最初から順に実行する場合:
 
 ```bash
 python -m src.cli.main init-db
@@ -124,19 +141,19 @@ python -m src.cli.main solve-diet --targets data/raw/targets.json --output outpu
 cat outputs/solution.json
 ```
 
-### CSV エクスポート
+### CSV を出力する
 
 ```bash
 python -m src.cli.main export-csv --output-dir outputs/csv
 ```
 
-未一致だけ出す場合:
+未対応付けデータだけ出力する場合:
 
 ```bash
 python -m src.cli.main export-unmatched --output outputs/unmatched.csv
 ```
 
-## 入力フォーマットの前提
+## 入力ファイルの前提
 
 ### MEXT
 
@@ -151,16 +168,17 @@ python -m src.cli.main export-unmatched --output outputs/unmatched.csv
 
 ## 出力
 
-`solve-diet` は JSON を出力します。主要フィールド:
+`solve-diet` は JSON を出力します。主要フィールドは次のとおりです。
 
 - `status`
+  値は `optimal`、`infeasible`、`error` のいずれかです
 - `total_cost_yen`
 - `foods`
 - `nutrients`
 - `excluded_foods_count`
 - `notes`
 
-`export-csv` は以下を出力します。
+`export-csv` は次の CSV を出力します。
 
 - `normalized_foods.csv`
 - `normalized_prices.csv`
@@ -170,5 +188,5 @@ python -m src.cli.main export-unmatched --output outputs/unmatched.csv
 ## テスト
 
 ```bash
-pytest
+PYTHONPATH=. pytest
 ```

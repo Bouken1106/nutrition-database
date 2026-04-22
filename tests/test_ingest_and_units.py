@@ -1,11 +1,36 @@
+import requests
 from openpyxl import Workbook
 
 from src.db.connection import get_connection
 from src.db.schema import create_schema
 from src.ingest.estat import import_estat
 from src.ingest.mext import import_mext
-from src.ingest.open_food_facts import upsert_off_product
+from src.ingest.open_food_facts import SEARCH_A_LICIOUS_URL, SEARCH_URL, search_products, upsert_off_product
 from src.normalize.units import convert_unit, normalize_mass_to_g, parse_quantity_text
+
+
+class StubResponse:
+    def __init__(self, payload: dict[str, object], status_code: int = 200, url: str = "https://example.test") -> None:
+        self._payload = payload
+        self.status_code = status_code
+        self.url = url
+
+    def raise_for_status(self) -> None:
+        if self.status_code >= 400:
+            raise requests.HTTPError(f"{self.status_code} error for {self.url}", response=self)
+
+    def json(self) -> dict[str, object]:
+        return self._payload
+
+
+class StubSession:
+    def __init__(self, responses: dict[str, StubResponse]) -> None:
+        self.responses = responses
+        self.calls: list[str] = []
+
+    def get(self, url: str, **_: object) -> StubResponse:
+        self.calls.append(url)
+        return self.responses[url]
 
 
 def test_unit_normalization():
@@ -106,3 +131,52 @@ def test_off_product_reimport_clears_missing_nutrients(tmp_path):
         )
         nutrients = conn.execute("SELECT nutrient_id FROM food_nutrients").fetchall()
         assert nutrients == []
+
+
+def test_off_search_prefers_search_a_licious_results():
+    session = StubSession(
+        {
+            SEARCH_A_LICIOUS_URL: StubResponse(
+                {
+                    "hits": [
+                        {
+                            "code": "4900000000000",
+                            "product_name": "オートミール",
+                            "nutriments": {},
+                        }
+                    ]
+                },
+                url=SEARCH_A_LICIOUS_URL,
+            )
+        }
+    )
+
+    products = search_products("オートミール", session)
+
+    assert [product["code"] for product in products] == ["4900000000000"]
+    assert session.calls == [SEARCH_A_LICIOUS_URL]
+
+
+def test_off_search_falls_back_to_legacy_when_search_a_licious_returns_empty():
+    session = StubSession(
+        {
+            SEARCH_A_LICIOUS_URL: StubResponse({"hits": []}, url=SEARCH_A_LICIOUS_URL),
+            SEARCH_URL: StubResponse(
+                {
+                    "products": [
+                        {
+                            "code": "4900000000001",
+                            "product_name": "オートミール",
+                            "nutriments": {},
+                        }
+                    ]
+                },
+                url=SEARCH_URL,
+            ),
+        }
+    )
+
+    products = search_products("オートミール", session)
+
+    assert [product["code"] for product in products] == ["4900000000001"]
+    assert session.calls == [SEARCH_A_LICIOUS_URL, SEARCH_URL]

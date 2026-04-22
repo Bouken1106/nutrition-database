@@ -41,26 +41,26 @@ def sync_products(conn: sqlite3.Connection, query: str, session: requests.Sessio
 
 
 def search_products(query: str, client: requests.Session) -> list[dict[str, object]]:
+    search_a_licious_error: requests.RequestException | None = None
     try:
-        response = client.get(
-            SEARCH_URL,
-            params={
-                "search_terms": query,
-                "search_simple": 1,
-                "action": "process",
-                "json": 1,
-                "page_size": 25,
-            },
-            headers={"User-Agent": USER_AGENT},
-            timeout=30,
-        )
-        response.raise_for_status()
-        payload = response.json()
-        products = payload.get("products", [])
-        if isinstance(products, list) and products:
+        products = search_products_search_a_licious(query, client)
+        if products:
             return products
     except requests.RequestException as exc:
-        LOGGER.warning("Open Food Facts legacy search failed, trying Search-a-licious: %s", exc)
+        search_a_licious_error = exc
+        LOGGER.debug("Open Food Facts Search-a-licious search failed: %s", exc)
+
+    try:
+        return search_products_legacy(query, client)
+    except requests.RequestException as exc:
+        if search_a_licious_error is not None:
+            raise RuntimeError(
+                "Open Food Facts search failed for both Search-a-licious and legacy endpoints"
+            ) from exc
+        raise
+
+
+def search_products_search_a_licious(query: str, client: requests.Session) -> list[dict[str, object]]:
     response = client.get(
         SEARCH_A_LICIOUS_URL,
         params={"q": query, "size": 25},
@@ -70,6 +70,27 @@ def search_products(query: str, client: requests.Session) -> list[dict[str, obje
     response.raise_for_status()
     payload = response.json()
     products = payload.get("hits", [])
+    if not isinstance(products, list):
+        raise RuntimeError("Open Food Facts search returned an unexpected payload")
+    return products
+
+
+def search_products_legacy(query: str, client: requests.Session) -> list[dict[str, object]]:
+    response = client.get(
+        SEARCH_URL,
+        params={
+            "search_terms": query,
+            "search_simple": 1,
+            "action": "process",
+            "json": 1,
+            "page_size": 25,
+        },
+        headers={"User-Agent": USER_AGENT},
+        timeout=30,
+    )
+    response.raise_for_status()
+    payload = response.json()
+    products = payload.get("products", [])
     if not isinstance(products, list):
         raise RuntimeError("Open Food Facts search returned an unexpected payload")
     return products
