@@ -67,9 +67,11 @@ python -m src.cli.main sync-off-products --query オートミール
 ### Open Prices 同期
 
 `JPY` の価格だけを取り込みます。`yen per g` に正規化できない価格は最適化対象から除外されます。
+同梱サンプルではなく外部 API の実データを使うため、存在する商品コードを指定してください。
+2026-04-22 時点で動作確認した例:
 
 ```bash
-python -m src.cli.main sync-open-prices --product-code 4900000000000
+python -m src.cli.main sync-open-prices --product-code 4902621003681
 ```
 
 ### 食品マッピング

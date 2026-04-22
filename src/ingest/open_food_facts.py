@@ -87,11 +87,16 @@ def sync_product_by_code(
         headers={"User-Agent": USER_AGENT},
         timeout=30,
     )
-    response.raise_for_status()
+    try:
+        response.raise_for_status()
+    except requests.HTTPError as exc:
+        if response.status_code == 404:
+            raise ValueError(f"product code not found in Open Food Facts: {product_code}") from exc
+        raise
     payload = response.json()
     product = payload.get("product")
     if not product:
-        return False
+        raise ValueError(f"product code not found in Open Food Facts: {product_code}")
     inserted = upsert_off_product(conn, product)
     conn.commit()
     return inserted
@@ -126,8 +131,7 @@ def upsert_off_product(conn: sqlite3.Connection, product: dict[str, object]) -> 
         edible_ratio=1.0,
     )
     nutrient_amounts = extract_supported_nutrients(product.get("nutriments") or {})
-    if nutrient_amounts:
-        replace_food_nutrients(conn, food_id, nutrient_amounts)
+    replace_food_nutrients(conn, food_id, nutrient_amounts)
     return True
 
 

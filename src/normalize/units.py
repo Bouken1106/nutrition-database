@@ -5,6 +5,8 @@ import unicodedata
 
 TRACE_MARKERS = {"", "-", "--", "tr", "trace", "微量", "na", "n/a"}
 MASS_UNITS = {
+    "ug": 0.000001,
+    "mcg": 0.000001,
     "g": 1.0,
     "gram": 1.0,
     "grams": 1.0,
@@ -25,6 +27,11 @@ VOLUME_UNITS = {
 }
 PIECE_UNITS = {"piece", "pieces", "個", "本", "袋", "pack", "packs"}
 UNIT_ALIASES = {
+    "μg": "ug",
+    "µg": "ug",
+    "mcg": "ug",
+    "ug": "ug",
+    "マイクログラム": "ug",
     "グラム": "g",
     "ｇ": "g",
     "kg": "kg",
@@ -126,4 +133,3 @@ def convert_unit(value: float, from_unit: object | None, to_unit: str) -> float 
         grams = value * MASS_UNITS[normalized_from]
         return grams / MASS_UNITS[normalized_to]
     return None
-

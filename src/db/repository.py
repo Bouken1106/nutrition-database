@@ -50,6 +50,7 @@ def replace_food_nutrients(
     food_id: str,
     nutrient_amounts: dict[str, float],
 ) -> None:
+    conn.execute("DELETE FROM food_nutrients WHERE food_id = ?", (food_id,))
     for nutrient_id, amount in nutrient_amounts.items():
         conn.execute(
             """
@@ -119,6 +120,16 @@ def upsert_mapping(
     mapping_id = mapping_id_for(from_source_type, from_source_key, to_food_id, mapping_method)
     conn.execute(
         """
+        DELETE FROM food_mapping
+        WHERE from_source_type = ?
+          AND from_source_key = ?
+          AND mapping_method = ?
+          AND mapping_id <> ?
+        """,
+        (from_source_type, from_source_key, mapping_method, mapping_id),
+    )
+    conn.execute(
+        """
         INSERT INTO food_mapping (
             mapping_id, from_source_type, from_source_key, to_food_id, mapping_confidence, mapping_method
         )
@@ -150,4 +161,3 @@ def store_targets(
         """,
         list(targets),
     )
-

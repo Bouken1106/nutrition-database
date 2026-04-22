@@ -20,41 +20,41 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     init_parser = subparsers.add_parser("init-db", help="Initialize the SQLite schema")
-    init_parser.add_argument("--db", default=str(DEFAULT_DB_PATH), help=argparse.SUPPRESS)
+    init_parser.add_argument("--db", default=argparse.SUPPRESS, help=argparse.SUPPRESS)
 
     ingest_mext_parser = subparsers.add_parser("ingest-mext", help="Import MEXT food composition data")
-    ingest_mext_parser.add_argument("--db", default=str(DEFAULT_DB_PATH), help=argparse.SUPPRESS)
+    ingest_mext_parser.add_argument("--db", default=argparse.SUPPRESS, help=argparse.SUPPRESS)
     ingest_mext_parser.add_argument("--input", required=True, help="Path to the MEXT Excel file")
 
     ingest_estat_parser = subparsers.add_parser("ingest-estat", help="Import e-Stat retail price data")
-    ingest_estat_parser.add_argument("--db", default=str(DEFAULT_DB_PATH), help=argparse.SUPPRESS)
+    ingest_estat_parser.add_argument("--db", default=argparse.SUPPRESS, help=argparse.SUPPRESS)
     ingest_estat_parser.add_argument("--input", required=True, help="Path to the e-Stat CSV or Excel file")
 
     off_parser = subparsers.add_parser("sync-off-products", help="Fetch Open Food Facts products by text query")
-    off_parser.add_argument("--db", default=str(DEFAULT_DB_PATH), help=argparse.SUPPRESS)
+    off_parser.add_argument("--db", default=argparse.SUPPRESS, help=argparse.SUPPRESS)
     off_parser.add_argument("--query", required=True, help="Search text")
 
     prices_parser = subparsers.add_parser("sync-open-prices", help="Fetch Open Prices records for a barcode")
-    prices_parser.add_argument("--db", default=str(DEFAULT_DB_PATH), help=argparse.SUPPRESS)
+    prices_parser.add_argument("--db", default=argparse.SUPPRESS, help=argparse.SUPPRESS)
     prices_parser.add_argument("--product-code", required=True, help="Product barcode")
 
     mapping_parser = subparsers.add_parser("map-foods", help="Map e-Stat foods to MEXT foods")
-    mapping_parser.add_argument("--db", default=str(DEFAULT_DB_PATH), help=argparse.SUPPRESS)
+    mapping_parser.add_argument("--db", default=argparse.SUPPRESS, help=argparse.SUPPRESS)
     mapping_group = mapping_parser.add_mutually_exclusive_group(required=True)
     mapping_group.add_argument("--auto", action="store_true", help="Run conservative auto mapping")
     mapping_group.add_argument("--manual", help="CSV override path for manual mapping")
 
     solve_parser = subparsers.add_parser("solve-diet", help="Solve cheapest daily diet")
-    solve_parser.add_argument("--db", default=str(DEFAULT_DB_PATH), help=argparse.SUPPRESS)
+    solve_parser.add_argument("--db", default=argparse.SUPPRESS, help=argparse.SUPPRESS)
     solve_parser.add_argument("--targets", required=True, help="Targets JSON path")
     solve_parser.add_argument("--output", required=True, help="Output JSON path")
 
     export_parser = subparsers.add_parser("export-csv", help="Export normalized tables to CSV")
-    export_parser.add_argument("--db", default=str(DEFAULT_DB_PATH), help=argparse.SUPPRESS)
+    export_parser.add_argument("--db", default=argparse.SUPPRESS, help=argparse.SUPPRESS)
     export_parser.add_argument("--output-dir", required=True, help="CSV output directory")
 
     unmatched_parser = subparsers.add_parser("export-unmatched", help="Export unmatched mapping rows to CSV")
-    unmatched_parser.add_argument("--db", default=str(DEFAULT_DB_PATH), help=argparse.SUPPRESS)
+    unmatched_parser.add_argument("--db", default=argparse.SUPPRESS, help=argparse.SUPPRESS)
     unmatched_parser.add_argument("--output", required=True, help="CSV output path")
     return parser
 

@@ -33,6 +33,8 @@ def sync_prices_for_product(
     )
     product_payload.raise_for_status()
     product_items = product_payload.json().get("items", [])
+    if not product_items:
+        raise ValueError(f"product code not found in Open Prices: {product_code}")
     product_info = product_items[0] if product_items else {}
     quantity_value = product_info.get("product_quantity")
     quantity_unit = product_info.get("product_quantity_unit")
@@ -45,10 +47,12 @@ def sync_prices_for_product(
     prices_response.raise_for_status()
     payload = prices_response.json()
     imported = 0
+    jpy_candidates = 0
     for item in payload.get("items", []):
         currency = str(item.get("currency") or "").upper()
         if currency != "JPY":
             continue
+        jpy_candidates += 1
         product = item.get("product") or {}
         record_quantity_value = product.get("product_quantity", quantity_value)
         record_quantity_unit = product.get("product_quantity_unit", quantity_unit)
@@ -71,5 +75,7 @@ def sync_prices_for_product(
             source_detail=f"open_prices:{item.get('id')}",
         )
         imported += 1
+    if jpy_candidates == 0:
+        raise ValueError(f"no JPY Open Prices records found for product code: {product_code}")
     conn.commit()
     return imported

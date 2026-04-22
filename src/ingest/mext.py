@@ -69,8 +69,7 @@ def import_mext(conn: sqlite3.Connection, input_path: str | Path) -> int:
                 amount = parse_number(value_at(row, header_map.get(nutrient_id)))
                 if amount is not None:
                     nutrient_amounts[nutrient_id] = amount
-            if nutrient_amounts:
-                replace_food_nutrients(conn, food_id, nutrient_amounts)
+            replace_food_nutrients(conn, food_id, nutrient_amounts)
             imported += 1
     conn.commit()
     return imported
@@ -109,4 +108,3 @@ def value_at(row: tuple[object, ...], idx: int | None) -> object | None:
     if idx is None or idx >= len(row):
         return None
     return row[idx]
-
