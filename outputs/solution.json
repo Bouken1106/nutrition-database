@@ -23,6 +23,8 @@
       "target_max": null
     }
   ],
-  "excluded_foods_count": 0,
-  "notes": []
+  "excluded_foods_count": 20,
+  "notes": [
+    "price missing foods excluded"
+  ]
 }

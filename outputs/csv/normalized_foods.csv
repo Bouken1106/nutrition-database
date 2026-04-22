@@ -1,0 +1,24 @@
+food_id,name,source_type,canonical_name,default_unit,is_eligible,exclusion_reason,price_per_g,observed_at
+mext_1001,白米,mext,白米,g,1,,0.25,2026-04-01T00:00:00Z
+mext_1002,オートミール,mext,オートミール,g,1,,0.36,2026-04-01T00:00:00Z
+off_0770795800016,オートミール,off,,g,0,price_missing,,
+off_4904075002210,プレミアムピュア　オートミール,off,,g,0,price_missing,,
+off_4900390710205,オートミール,off,,g,0,price_missing,,
+off_4900390708677,グラノーラ上級者さんの  オートミール,off,,g,0,price_missing,,
+off_4904075007833,オートミール,off,,g,0,price_missing,,
+off_4582152498240,オートミール,off,,g,0,price_missing,,
+off_4937768094650,オートミール　クイックオーツ,off,,g,0,price_missing,,
+off_4901870301630,オートミール,off,,g,0,price_missing,,
+off_4573179682200,オートミール ロールドオーツ,off,,g,0,price_missing,,
+off_4901113482140,アレンジ自在　オートミール,off,,g,0,price_missing,,
+off_4571233478455,オートミール　クイックオーツ,off,,g,0,price_missing,,
+off_4900390709735,オートミール,off,,g,0,price_missing,,
+off_4946763096125,オートミール,off,,g,0,price_missing,,
+off_4900390710199,オートミール　クイックタイプ,off,,g,0,price_missing,,
+off_6415000164616,オートミール,off,,g,0,price_missing,,
+off_4560324607706,オートミール　インスタント,off,,g,0,price_missing,,
+off_4589999061941,オートミール,off,,g,0,price_missing,,
+off_4901870301258,オートミール,off,,g,0,price_missing,,
+off_4573595510293,オートミール,off,,g,0,price_missing,,
+off_4562102282174,オートミール　ロールドオーツ,off,,g,0,price_missing,,
+off_4902621003681,バランス パワー ココア,off,,g,1,,1.4545454545454546,2024-08-21T00:00:00Z

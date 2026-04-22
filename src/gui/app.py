@@ -17,6 +17,7 @@ from src.ingest.mext import import_mext
 from src.ingest.open_food_facts import sync_products
 from src.ingest.open_prices import sync_prices_for_product
 from src.normalize.mapping import auto_map_foods, manual_map_foods
+from src.gui.solution_summary import build_solution_summary_text
 from src.optimize.solver import solve_diet_to_file
 
 TaskResult = tuple[str, str, object]
@@ -442,9 +443,10 @@ class NutritionDatabaseApp(tk.Tk):
             with get_connection(db_file) as conn:
                 result = solve_diet_to_file(conn, targets_path, output_path)
             preview = json.dumps(result, ensure_ascii=False, indent=2)
+            summary = build_solution_summary_text(result)
             return {
                 "message": f"最適化結果 ({result['status']}) を出力しました: {output_path}",
-                "result_text": preview,
+                "result_text": f"{summary}\n\nJSON 原文\n{preview}",
             }
 
         self._run_task("最適化", worker)
